@@ -4,20 +4,20 @@
 
 . ./include/path.sh # load $os var
 
-[ -z "$TRAVIS" ] && TRAVIS=0 # skip steps not required for CI?
+[ -z "$IN_CI" ] && TRAVIS=0 # skip steps not required for CI?
 [ -z "$WGET" ] && WGET=wget # possibility of calling wget differently
 
 if [ "$os" == "linux" ]; then
-	if [ $TRAVIS -eq 0 ]; then
+	if [ $IN_CI -eq 0 ]; then
 		hash yum &>/dev/null && {
-			sudo yum install autoconf pkgconfig libtool ninja-build unzip \
-			python3-pip python3-setuptools unzip wget;
-			sudo pip3 install meson; }
+			sudo yum install autoconf pkgconfig libtool ninja-build \
+			python3-pip python3-setuptools unzip wget gperf;
+			python3 -m pip install meson jsonschema jinja2; }
 		apt-get -v &>/dev/null && {
 		    sudo apt-get update;
-			sudo apt-get install -y autoconf pkg-config libtool ninja-build nasm unzip \
-			python3-pip python3-setuptools unzip;
-			sudo pip3 install meson; }
+			sudo apt-get install -y autoconf pkg-config libtool ninja-build nasm \
+			python3-pip python3-setuptools unzip python3-jinja2; }
+			python -m pip install meson
 	fi
 
 	if ! javac -version &>/dev/null; then
@@ -31,14 +31,14 @@ if [ "$os" == "linux" ]; then
 
 	os_ndk="linux"
 elif [ "$os" == "mac" ]; then
-	if [ $TRAVIS -eq 0 ]; then
+	if [ $IN_CI -eq 0 ]; then
 		if ! hash brew 2>/dev/null; then
 			echo "Error: brew not found. You need to install Homebrew: https://brew.sh/"
 			exit 255
 		fi
 		brew install \
 			automake autoconf libtool pkg-config \
-			coreutils gnu-sed wget meson ninja
+			coreutils gnu-sed wget meson ninja gperf
 	fi
 	if ! javac -version &>/dev/null; then
 		echo "Error: missing Java Development Kit. Install it manually."
@@ -61,10 +61,10 @@ sdkmanager () {
 	"$exe" --sdk_root="${ANDROID_HOME}" "$@"
 }
 echo y | sdkmanager \
-	"platforms;android-33" \
+	"platforms;${v_platform}" \
 	"build-tools;${v_sdk_build_tools}" \
 	"ndk;${v_ndk}" \
-	"cmake;3.22.1"
+	"cmake;${v_cmake}"
 
 # gas-preprocessor
 mkdir -p bin
