@@ -47,9 +47,7 @@ dep_libass=(freetype fontconfig fribidi harfbuzz libunibreak)
 dep_lua=()
 dep_libplacebo=()
 dep_shaderc=()
-# lua is left out on purpose: mpv.sh builds with -Dlua=disabled.
-if [ -n "${ENCODERS_GPL+x}" ]; then
-	dep_mpv=(ffmpeg libplacebo libass fftools_ffi)
-else
-	dep_mpv=(ffmpeg libplacebo libass)
-fi
+# lua is left out on purpose: mpv.sh builds with -Dlua=disabled. fftools-ffi
+# is left out because its newest revision only compiles against the ffmpeg 6
+# API; the encoders-gpl flavor keeps its GPL encoders, minus the CLI tooling.
+dep_mpv=(ffmpeg libplacebo libass)
