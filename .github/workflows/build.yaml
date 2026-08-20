@@ -32,6 +32,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf pkgconf libtool ninja-build python3-pip python3-jinja2 gperf nasm
+          sudo pip3 install --break-system-packages meson
+
       - name: Symlink SDK
         working-directory: ./buildscripts
         run: |
@@ -39,16 +45,22 @@ jobs:
           ln -s ${ANDROID_HOME} ./sdk/android-sdk-linux
       - name: Bundle (default)
         working-directory: ./buildscripts
+        env:
+          IN_CI: 1
         run: |
           sudo chmod +x bundle_default.sh
           ./bundle_default.sh
       - name: Bundle (full)
         working-directory: ./buildscripts
+        env:
+          IN_CI: 1
         run: |
           sudo chmod +x bundle_full.sh
           ./bundle_full.sh
       - name: Bundle (encoders-gpl)
         working-directory: ./buildscripts
+        env:
+          IN_CI: 1
         run: |
           sudo chmod +x bundle_encoders-gpl.sh
           ./bundle_encoders-gpl.sh
