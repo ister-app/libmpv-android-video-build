@@ -22,5 +22,11 @@ $0 clean # separate building not supported, always clean
 python3 scripts/config.py set MBEDTLS_THREADING_C
 python3 scripts/config.py set MBEDTLS_THREADING_PTHREAD
 
-make CFLAGS=-fPIC CXXFLAGS=-fPIC -j$cores no_test
-make CFLAGS=-fPIC CXXFLAGS=-fPIC DESTDIR="$prefix_dir" install
+make CFLAGS=-fPIC CXXFLAGS=-fPIC -j$cores lib
+
+# Not `make install`: that depends on the demo programs, and with threading
+# enabled they link -lpthread, which bionic does not ship as a separate
+# library. Install what this build actually consumes.
+mkdir -p "$prefix_dir/include" "$prefix_dir/lib"
+cp -rp include/mbedtls include/psa "$prefix_dir/include/"
+cp -RP library/libmbedtls.a library/libmbedx509.a library/libmbedcrypto.a "$prefix_dir/lib/"
