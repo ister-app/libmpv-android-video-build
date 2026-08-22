@@ -45,7 +45,10 @@ dep_harfbuzz=()
 dep_libunibreak=()
 dep_libass=(freetype fontconfig fribidi harfbuzz libunibreak)
 dep_lua=()
-dep_libplacebo=()
+# shaderc: libplacebo's vulkan backend needs a runtime GLSL→SPIR-V compiler.
+# The script builds the NDK's bundled shaderc — if a future NDK drops
+# sources/third_party/shaderc, switch libplacebo to -Dglslang=enabled instead.
+dep_libplacebo=(shaderc)
 dep_shaderc=()
 # lua is left out on purpose: mpv.sh builds with -Dlua=disabled. fftools-ffi
 # is left out because its newest revision only compiles against the ffmpeg 6
